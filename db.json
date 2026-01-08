@@ -1,0 +1,179 @@
+{
+  "products": [
+    {
+      "id": 1763698032193,
+      "clientId": "clientA",
+      "name": "Bebida",
+      "price": 2500,
+      "category": "Bebestible"
+    },
+    {
+      "id": 1763699916419,
+      "clientId": "bahia-escondida",
+      "name": "Bebida",
+      "price": 2500,
+      "category": "Bebestible"
+    },
+    {
+      "id": 1763699969106,
+      "clientId": "bahia-escondida",
+      "name": "Almuerzo",
+      "price": 2500,
+      "category": "Comida"
+    },
+    {
+      "id": 1765287992618,
+      "clientId": "bahia-escondida",
+      "name": "Almuerzo",
+      "price": 2500,
+      "category": "Comida"
+    },
+    {
+      "id": 1765301791153,
+      "clientId": "bahia-escondida",
+      "name": "Menú Básico",
+      "category": "Comida",
+      "price": 5500
+    },
+    {
+      "id": 1765309643722,
+      "clientId": "bahia-escondida",
+      "name": "Menú Básico 2",
+      "category": "Comida",
+      "price": 6500
+    }
+  ],
+  "sales": [
+    {
+      "id": 1765850598648,
+      "createdAt": "2025-12-16T02:03:18.648Z",
+      "tableNumber": 1,
+      "clientId": "bahia-escondida",
+      "status": "abierta",
+      "products": [
+        {
+          "id": 1763699916419,
+          "clientId": "bahia-escondida",
+          "name": "Bebida",
+          "price": 2500,
+          "category": "Bebestible",
+          "quantity": 2
+        },
+        {
+          "id": 1765301791153,
+          "clientId": "bahia-escondida",
+          "name": "Menú Básico",
+          "category": "Comida",
+          "price": 5500,
+          "quantity": 1
+        },
+        {
+          "id": 1765287992618,
+          "clientId": "bahia-escondida",
+          "name": "Almuerzo",
+          "price": 2500,
+          "category": "Comida",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": 1766159234888,
+      "createdAt": "2025-12-19T15:47:14.888Z",
+      "tableNumber": 2,
+      "clientId": "bahia-escondida",
+      "status": "abierta",
+      "products": [
+        {
+          "id": 1765301791153,
+          "clientId": "bahia-escondida",
+          "name": "Menú Básico",
+          "category": "Comida",
+          "price": 5500,
+          "quantity": 8
+        },
+        {
+          "id": 1765287992618,
+          "clientId": "bahia-escondida",
+          "name": "Almuerzo",
+          "price": 2500,
+          "category": "Comida",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": 1767881346633,
+      "createdAt": "2026-01-08T14:09:06.633Z",
+      "tableNumber": 1,
+      "clientId": "bahia-escondida",
+      "status": "cerrada",
+      "products": [],
+      "closedAt": "2026-01-08T16:02:33.577Z"
+    },
+    {
+      "id": 1767887366196,
+      "createdAt": "2026-01-08T15:49:26.196Z",
+      "tableNumber": 5,
+      "clientId": "bahia-escondida",
+      "status": "cerrada",
+      "products": [],
+      "closedAt": "2026-01-08T16:02:27.828Z"
+    },
+    {
+      "id": 1767887422006,
+      "createdAt": "2026-01-08T15:50:22.006Z",
+      "tableNumber": 3,
+      "clientId": "bahia-escondida",
+      "status": "abierta",
+      "products": [
+        {
+          "id": 1763699916419,
+          "clientId": "bahia-escondida",
+          "name": "Bebida",
+          "price": 2500,
+          "category": "Bebestible",
+          "quantity": 1
+        }
+      ]
+    }
+  ],
+  "saleProducts": [
+    {
+      "id": 1766169805459,
+      "saleId": 1766159234888,
+      "productId": 1765301791153,
+      "quantity": 8
+    },
+    {
+      "id": 1766170976524,
+      "saleId": 1766159234888,
+      "productId": 1765287992618,
+      "quantity": 1
+    },
+    {
+      "id": 1767886460811,
+      "saleId": 1765850598648,
+      "productId": 1763699916419,
+      "quantity": 2
+    },
+    {
+      "id": 1767886492526,
+      "saleId": 1765850598648,
+      "productId": 1765301791153,
+      "quantity": 1
+    },
+    {
+      "id": 1767886492532,
+      "saleId": 1765850598648,
+      "productId": 1765287992618,
+      "quantity": 1
+    },
+    {
+      "id": 1767887426708,
+      "saleId": 1767887422006,
+      "productId": 1763699916419,
+      "quantity": 1
+    }
+  ]
+}
