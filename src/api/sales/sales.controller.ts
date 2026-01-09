@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { SalesService } from 'src/services/sales/sales.service';
 
 @Controller('sales')
@@ -6,7 +6,7 @@ export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
   @Post()
-  createProduct(@Body() body) {
+  createSale(@Body() body) {
     console.log('Received sale creation request: ', body);
     return this.salesService.create(body);
   }
@@ -37,5 +37,11 @@ export class SalesController {
   closeSale(@Param('saleId') saleId: number) {
     console.log('Received sale to close with id: ', saleId);
     return this.salesService.closeSale(saleId);
+  }
+
+  @Delete(':saleId')
+  deleteSale(@Param('saleId') saleId: number) {
+    console.log('Received sale to delete with id: ', saleId);
+    return this.salesService.deleteSale(saleId);
   }
 }

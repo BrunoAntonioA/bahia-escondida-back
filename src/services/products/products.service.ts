@@ -4,34 +4,39 @@ import { BaseProduct } from 'src/models/products.models';
 
 @Injectable()
 export class ProductsService {
-  readonly collectionName = 'products';
   constructor(private readonly db: DbLowService) {}
 
   findAll() {
-    return this.db.getCollection('products').value();
+    const state = this.db.read();
+    return state.products;
   }
 
   create(product: BaseProduct) {
-    console.log('Creating product: ', product);
     const newProduct = {
       id: Date.now(),
       ...product,
     };
 
-    this.db.getCollection('products').push(newProduct).write();
+    const state = this.db.read();
+    state.products.push(newProduct);
+    this.db['save'](state); // internal safe write
 
     return newProduct;
   }
 
-  public getClientProducts(clientId: string) {
-    return this.db.findByFilter(clientId, 'clientId', this.collectionName);
+  getClientProducts(clientId: string) {
+    const state = this.db.read();
+    return state.products.filter((product) => product.clientId === clientId);
   }
 
   delete(productId: string) {
-    this.db
-      .getCollection(this.collectionName)
-      .remove({ id: Number(productId) })
-      .write();
+    const state = this.db.read();
+
+    state.products = state.products.filter(
+      (product) => product.id !== Number(productId),
+    );
+
+    this.db['save'](state);
 
     return { deletedProductId: productId };
   }

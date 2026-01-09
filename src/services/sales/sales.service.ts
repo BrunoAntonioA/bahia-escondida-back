@@ -4,137 +4,147 @@ import { BaseSale } from 'src/models/sales.models';
 
 @Injectable()
 export class SalesService {
-  readonly collectionName = 'sales';
   constructor(private readonly db: DbLowService) {}
 
   findAll() {
-    return this.db.getCollection(this.collectionName).value();
+    const state = this.db.read();
+    return state.sales;
   }
 
   create(sale: BaseSale) {
-    console.log('Creating sale: ', sale);
     const newSale = {
       id: Date.now(),
       createdAt: new Date(),
       ...sale,
     };
-    this.db.getCollection(this.collectionName).push(newSale).write();
+
+    const state = this.db.read();
+    state.sales.push(newSale);
+    this.db.save(state);
+
     return newSale;
   }
 
   getSaleById(saleId: number) {
-    const sale = this.db
-      .getCollection(this.collectionName)
-      .find({ id: Number(saleId) })
-      .value();
+    const state = this.db.read();
+
+    const sale = state.sales.find((s) => s.id === Number(saleId));
 
     if (!sale) return null;
 
-    const saleProducts = this.getSaleProducts(saleId);
+    const saleProducts = state.saleProducts.filter(
+      (sp) => sp.saleId === Number(saleId),
+    );
 
-    if (saleProducts) {
-      const products = saleProducts.map((sp) => {
-        const product = this.db
-          .getCollection('products')
-          .find({ id: sp.productId })
-          .value();
+    const products = saleProducts
+      .map((sp) => {
+        const product = state.products.find((p) => p.id === sp.productId);
+
+        if (!product) return null;
 
         return {
           ...product,
           quantity: sp.quantity,
         };
-      });
-      sale.products = products;
+      })
+      .filter(Boolean);
+
+    return {
+      ...sale,
+      products,
+    };
+  }
+
+  addProductToSale(saleId: number, productId: number, quantity: number) {
+    const state = this.db.read();
+
+    const productExists = state.products.some(
+      (p) => p.id === Number(productId),
+    );
+
+    if (!productExists) {
+      throw new Error('Product does not exist');
     }
+
+    const existingSaleProduct = state.saleProducts.find(
+      (sp) =>
+        sp.saleId === Number(saleId) && sp.productId === Number(productId),
+    );
+
+    if (!existingSaleProduct) {
+      const newSaleProduct = {
+        id: Date.now(),
+        saleId: Number(saleId),
+        productId: Number(productId),
+        quantity: Number(quantity),
+      };
+
+      state.saleProducts.push(newSaleProduct);
+      this.db.save(state);
+
+      return newSaleProduct;
+    }
+
+    existingSaleProduct.quantity += Number(quantity);
+    this.db.save(state);
+  }
+
+  closeSale(saleId: number) {
+    const state = this.db.read();
+
+    const sale = state.sales.find((s) => s.id === Number(saleId));
+
+    if (!sale) return null;
+
+    sale.status = 'cerrada';
+    sale.closedAt = new Date();
+
+    this.db.save(state);
 
     return sale;
   }
 
-  addProductToSale(saleId: number, productId: number, quantity: number) {
-    const existingProduct = this.getProductById(productId);
-    if (!existingProduct) {
-      throw new Error('Product does not exist');
-    }
-    const existingSaleProduct = this.getSaleProduct(saleId, productId);
-    if (!existingSaleProduct || existingSaleProduct.length === 0) {
-      const newSaleProduct = {
-        id: Date.now(),
-        saleId,
-        productId,
-        quantity,
-      };
-      console.log('newSaleProduct to create: ', newSaleProduct);
-      this.db.getCollection('saleProducts').push(newSaleProduct).write();
-      return newSaleProduct;
-    } else {
-      this.updateSaleProductQuantity(
-        existingSaleProduct[0].id,
-        quantity + existingSaleProduct[0].quantity,
-      );
-    }
-  }
+  deleteSale(saleId: number) {
+    const state = this.db.read();
 
-  getProductById(productId: number) {
-    return this.db
-      .getCollection('products')
-      .find({ id: Number(productId) })
-      .value();
-  }
+    state.sales = state.sales.filter((s) => s.id !== Number(saleId));
 
-  updateSaleProductQuantity(id: number, quantity: number) {
-    this.db
-      .getCollection('saleProducts')
-      .find({ id: Number(id) })
-      .assign({ quantity: Number(quantity) })
-      .write();
-  }
+    state.saleProducts = state.saleProducts.filter(
+      (sp) => sp.saleId !== Number(saleId),
+    );
 
-  closeSale(saleId) {
-    this.db
-      .getCollection('sales')
-      .find({ id: Number(saleId) })
-      .assign({ status: 'cerrada', closedAt: new Date() })
-      .write();
-  }
+    this.db.save(state);
 
-  getSaleProduct(saleId: number, productId: number) {
-    return this.db
-      .getCollection('saleProducts')
-      .filter({ saleId: Number(saleId), productId: Number(productId) })
-      .value();
-  }
-
-  getSaleProducts(saleId: number) {
-    return this.db
-      .getCollection('saleProducts')
-      .filter({ saleId: Number(saleId) })
-      .value();
+    return { deletedSaleId: saleId };
   }
 
   getSalesByClientId(clientId: number) {
-    const sales = this.db
-      .getCollection(this.collectionName)
-      .filter({ clientId: clientId })
-      .value();
+    const state = this.db.read();
 
-    for (const sale of sales) {
-      const saleProducts = this.getSaleProducts(sale.id);
-      if (saleProducts) {
-        const products = saleProducts.map((sp) => {
-          const product = this.db
-            .getCollection('products')
-            .find({ id: sp.productId })
-            .value();
+    const sales = state.sales.filter((s) => s.clientId === clientId);
+
+    return sales.map((sale) => {
+      const saleProducts = state.saleProducts.filter(
+        (sp) => sp.saleId === sale.id,
+      );
+
+      const products = saleProducts
+        .map((sp) => {
+          const product = state.products.find((p) => p.id === sp.productId);
+
+          if (!product) return null;
 
           return {
             ...product,
             quantity: sp.quantity,
           };
-        });
-        sale.products = products;
-      }
-    }
+        })
+        .filter(Boolean);
 
-    return sales;
+      return {
+        ...sale,
+        products,
+      };
+    });
   }
 }

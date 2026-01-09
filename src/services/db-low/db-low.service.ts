@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
+import { Singleton } from 'src/shared/singleton';
 
 interface DbSchema {
   sales: any[];
   products: any[];
   saleProducts: any[];
 }
-
+@Singleton
 @Injectable()
 export class DbLowService {
   private db: low.LowdbSync<DbSchema>;
@@ -16,28 +17,60 @@ export class DbLowService {
     const adapter = new FileSync<DbSchema>('db.json');
     this.db = low(adapter);
 
-    this.db.defaults({ products: [], sales: [], saleProducts: [] }).write();
-  }
+    // Ensure full schema exists ONCE
+    const state = this.db.getState() || ({} as DbSchema);
 
-  read() {
-    return this.db.getState();
-  }
+    const safeState: DbSchema = {
+      products: state.products ?? [],
+      sales: state.sales ?? [],
+      saleProducts: state.saleProducts ?? [],
+    };
 
-  get data() {
-    return this.db.getState();
-  }
-
-  write() {
+    this.db.setState(safeState);
     this.db.write();
   }
 
-  async findByFilter(value: any, key: string, collection: keyof DbSchema) {
-    return this.getCollection(collection)
-      .filter({ [key]: value })
-      .value();
+  /** 🔒 Always read full DB */
+  read(): DbSchema {
+    return this.db.getState();
   }
 
-  getCollection<K extends keyof DbSchema>(name: K) {
-    return this.db.get(name);
+  /** 🔒 Safe getter */
+  get data(): DbSchema {
+    return this.db.getState();
+  }
+
+  /** 🔒 Overwrites entire DB (safe) */
+  save(state: DbSchema): void {
+    this.db.setState(state);
+    this.db.write();
+  }
+
+  /** ✅ Add helpers (example) */
+  addProduct(product: any) {
+    const state = this.read();
+    state.products.push(product);
+    this.save(state);
+    return product;
+  }
+
+  addSale(sale: any) {
+    const state = this.read();
+    state.sales.push(sale);
+    this.save(state);
+    return sale;
+  }
+
+  addSaleProduct(saleProduct: any) {
+    const state = this.read();
+    state.saleProducts.push(saleProduct);
+    this.save(state);
+    return saleProduct;
+  }
+
+  /** 🔎 Safe filtering */
+  findByFilter(value: any, key: string, collection: keyof DbSchema) {
+    const state = this.read();
+    return state[collection].filter((item) => item[key] === value);
   }
 }

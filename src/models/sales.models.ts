@@ -1,6 +1,7 @@
 export class BaseSale {
-  tableNumber: number;
   clientId: string;
+  isDelivery: boolean;
+  tableNumber?: number;
   customerNickname?: string;
   partySize?: number;
   status: string;
