@@ -7,6 +7,7 @@ interface DbSchema {
   sales: any[];
   products: any[];
   saleProducts: any[];
+  payments: any[]
 }
 @Singleton
 @Injectable()
@@ -24,6 +25,7 @@ export class DbLowService {
       products: state.products ?? [],
       sales: state.sales ?? [],
       saleProducts: state.saleProducts ?? [],
+      payments: state.payments ?? []
     };
 
     this.db.setState(safeState);

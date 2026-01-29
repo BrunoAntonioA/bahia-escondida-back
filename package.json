@@ -24,6 +24,8 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "lowdb": "^1.0.0",
+    "nest": "^0.1.6",
+    "node-thermal-printer": "^4.6.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

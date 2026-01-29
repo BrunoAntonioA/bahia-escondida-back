@@ -1,5 +1,136 @@
 {
-  "products": [],
-  "sales": [],
-  "saleProducts": []
+  "products": [
+    {
+      "id": 1769656588898,
+      "clientId": "bahia-escondida",
+      "name": "cazuela",
+      "category": "Comida",
+      "price": 7000
+    },
+    {
+      "id": 1769656617606,
+      "clientId": "bahia-escondida",
+      "name": "merluza+papas mayo",
+      "category": "Comida",
+      "price": 7000
+    },
+    {
+      "id": 1769656631977,
+      "clientId": "bahia-escondida",
+      "name": "pastel de choclo",
+      "category": "Comida",
+      "price": 7000
+    },
+    {
+      "id": 1769656643559,
+      "clientId": "bahia-escondida",
+      "name": "jugos",
+      "category": "Bebestible",
+      "price": 3000
+    },
+    {
+      "id": 1769656658818,
+      "clientId": "bahia-escondida",
+      "name": "bebidas",
+      "category": "Bebestible",
+      "price": 2000
+    }
+  ],
+  "sales": [
+    {
+      "id": 1769656681870,
+      "createdAt": "2026-01-29T03:18:01.870Z",
+      "tableNumber": 1,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "cerrada",
+      "closedAt": "2026-01-29T03:19:20.539Z"
+    },
+    {
+      "id": 1769656842896,
+      "createdAt": "2026-01-29T03:20:42.896Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "Carlita",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    }
+  ],
+  "saleProducts": [
+    {
+      "id": 1769656702410,
+      "saleId": 1769656681870,
+      "productId": 1769656617606,
+      "quantity": 1
+    },
+    {
+      "id": 1769656702413,
+      "saleId": 1769656681870,
+      "productId": 1769656631977,
+      "quantity": 1
+    },
+    {
+      "id": 1769656702422,
+      "saleId": 1769656681870,
+      "productId": 1769656643559,
+      "quantity": 1
+    },
+    {
+      "id": 1769656702431,
+      "saleId": 1769656681870,
+      "productId": 1769656658818,
+      "quantity": 1
+    },
+    {
+      "id": 1769656863407,
+      "saleId": 1769656842896,
+      "productId": 1769656658818,
+      "quantity": 1
+    }
+  ],
+  "payments": [
+    {
+      "id": 1768406225782,
+      "createdAt": "2026-01-14T15:57:05.782Z",
+      "cashPaid": 1500,
+      "cardPaid": 1000,
+      "saleId": 23038102
+    },
+    {
+      "id": 1769655132345,
+      "createdAt": "2026-01-29T02:52:12.345Z",
+      "cashPaid": 0,
+      "cardPaid": 10000,
+      "saleId": 1769655071914
+    },
+    {
+      "id": 1769655895001,
+      "createdAt": "2026-01-29T03:04:55.001Z",
+      "cashPaid": 10000,
+      "cardPaid": 4500,
+      "saleId": 1769655071914
+    },
+    {
+      "id": 1769656206992,
+      "createdAt": "2026-01-29T03:10:06.992Z",
+      "cashPaid": 7000,
+      "cardPaid": 2500,
+      "saleId": 1769655691162
+    },
+    {
+      "id": 1769656760536,
+      "createdAt": "2026-01-29T03:19:20.536Z",
+      "cashPaid": 0,
+      "cardPaid": 20900,
+      "saleId": 1769656681870
+    },
+    {
+      "id": 1769656830815,
+      "createdAt": "2026-01-29T03:20:30.815Z",
+      "cashPaid": 14000,
+      "cardPaid": 0,
+      "saleId": 1769656797280
+    }
+  ]
 }
