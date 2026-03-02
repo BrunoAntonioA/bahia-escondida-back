@@ -147,4 +147,24 @@ export class SalesService {
       };
     });
   }
+
+  deleteSaleProduct(saleId: number, productId: number) {
+    console.log('saleId: ', saleId);
+    console.log('productId: ', productId);
+
+    const state = this.db.read();
+
+    console.log(
+      state.saleProducts.filter(
+        (s) => s.saleId === saleId && s.productId === productId,
+      ),
+    );
+
+    state.saleProducts = state.saleProducts.filter(
+      (s) =>
+        !(s.saleId === Number(saleId) && s.productId === Number(productId)),
+    );
+
+    this.db.save(state);
+  }
 }

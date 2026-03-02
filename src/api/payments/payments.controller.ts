@@ -8,7 +8,13 @@ export class PaymentsController {
   @Post()
   createPayment(@Body() body) {
     console.log('Received sale creation request: ', body);
-    const { cardPaid, cashPaid, saleId } = body;
-    return this.paymentsService.create(cardPaid, cashPaid, saleId);
+    const { cardPaid, cashPaid, transferPaid, tipPaid, saleId } = body;
+    return this.paymentsService.create(
+      cardPaid,
+      cashPaid,
+      transferPaid,
+      tipPaid,
+      saleId,
+    );
   }
 }

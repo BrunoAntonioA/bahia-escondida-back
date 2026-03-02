@@ -44,4 +44,13 @@ export class SalesController {
     console.log('Received sale to delete with id: ', saleId);
     return this.salesService.deleteSale(saleId);
   }
+
+  @Delete(':saleId/product/:productId')
+  deleteSaleProduct(
+    @Param('saleId') saleId: number,
+    @Param('productId') productId: number,
+  ) {
+    console.log('Received product sale to delete with: ', saleId, productId);
+    return this.salesService.deleteSaleProduct(saleId, productId);
+  }
 }
