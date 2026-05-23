@@ -3,6 +3,13 @@ export enum ProductCategory {
   DRINKS = 'DRINKS',
 }
 
+export class ProductOption {
+  id: number;
+  productId: number;
+  name: string;
+  price: number;
+}
+
 export class BaseProduct {
   clientId: number;
   name: string;
@@ -13,5 +20,6 @@ export class BaseProduct {
 export class Product extends BaseProduct {
   id: number;
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt: Date;
+  options: ProductOption[];
 }

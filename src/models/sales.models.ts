@@ -1,14 +1,30 @@
-export class BaseSale {
-  clientId: string;
+export class SaleProductLine {
+  id: number;
+  productId: number;
+  name: string;
+  price: number;
+  quantity: number;
+  category?: string;
+  clientId?: number;
+}
+
+export class Sale {
+  id: number;
+  clientId: number;
   isDelivery: boolean;
   tableNumber?: number;
   customerNickname?: string;
   partySize?: number;
   status: string;
-  products: [];
-  createdAt?: Date;
+  closedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  products?: SaleProductLine[];
 }
 
-export class Sale extends BaseSale {
+export class SaleProductEntry {
   id: number;
+  saleId: number;
+  productId: number;
+  quantity: number;
 }

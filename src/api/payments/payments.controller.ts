@@ -21,8 +21,8 @@ export class PaymentsController {
     const { cardPaid, cashPaid, transferPaid, tipPaid, saleId } = body;
     return this.paymentsService.create(
       clientId,
-      cardPaid,
       cashPaid,
+      cardPaid,
       transferPaid,
       tipPaid,
       saleId,

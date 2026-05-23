@@ -7,7 +7,6 @@ export class ClientsController {
 
   @Post()
   createClient(@Body() body) {
-    console.log('Received client creation request: ', body);
     const { name, email, phone, address } = body;
     return this.clientsService.create({ name, email, phone, address });
   }

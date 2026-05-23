@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { BaseClient, Client } from 'src/models/clients.models';
 
+@Injectable()
 export class ClientDBRepository {
   constructor(private readonly prismaService: PrismaService) {}
 

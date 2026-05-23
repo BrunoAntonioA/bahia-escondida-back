@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { BaseUser, User, UserWithPassword } from 'src/models/user.models';
@@ -8,6 +9,7 @@ export interface CreateUserData extends BaseUser {
   role?: UserRole;
 }
 
+@Injectable()
 export class UserDBRepository {
   constructor(private readonly prismaService: PrismaService) {}
 

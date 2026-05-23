@@ -35,7 +35,7 @@ export class AuthService {
         role: dto.role,
         clientId: dto.clientId,
       });
-
+      console.log('created user: ', user);
       return this.buildAuthResponse(user);
     } catch (error) {
       if (this.userRepository.isUniqueConstraintError(error)) {

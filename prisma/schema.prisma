@@ -75,22 +75,24 @@ model ProductOption {
 }
 
 model Sale {
-  id             Int    @id @default(autoincrement())
-  clientId       Int
-  saleType       String
-  saleIdentifier String
-  partySize      Int?
-  status         String @default("OPEN")
+  id               Int       @id @default(autoincrement())
+  clientId         Int
+  isDelivery       Boolean   @default(false)
+  tableNumber      Int?
+  customerNickname String?
+  partySize        Int?
+  status           String    @default("abierta")
+  closedAt         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   client   Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
   products SaleProduct[]
+  payments Payment[]
 
   @@index([clientId])
   @@index([status])
-  @@index([saleType])
 }
 
 model SaleProduct {
@@ -99,6 +101,7 @@ model SaleProduct {
   productId   Int
   name        String
   price       Decimal @db.Decimal(10, 2)
+  quantity    Int     @default(1)
   observation String?
 
   sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
@@ -106,6 +109,7 @@ model SaleProduct {
 
   options SaleProductOption[]
 
+  @@unique([saleId, productId])
   @@index([saleId])
   @@index([productId])
 }
@@ -122,4 +126,18 @@ model SaleProductOption {
 
   @@index([saleProductId])
   @@index([productOptionId])
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  saleId       Int
+  cashPaid     Decimal  @default(0) @db.Decimal(10, 2)
+  cardPaid     Decimal  @default(0) @db.Decimal(10, 2)
+  transferPaid Decimal  @default(0) @db.Decimal(10, 2)
+  tipPaid      Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
 }
