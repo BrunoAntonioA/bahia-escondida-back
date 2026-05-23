@@ -18,16 +18,14 @@ export class ProductsService {
     return this.productsRepository.findByClientId(clientId);
   }
 
-  public async delete(clientId: number, productId: number) {
+  public async delete(clientId: number, productId: number): Promise<Product> {
     try {
-      await this.productsRepository.delete(clientId, productId);
+      return await this.productsRepository.deactivate(clientId, productId);
     } catch (error) {
       if (this.productsRepository.isNotFoundError(error)) {
         throw new NotFoundException('Product not found');
       }
       throw error;
     }
-
-    return { deletedProductId: productId };
   }
 }

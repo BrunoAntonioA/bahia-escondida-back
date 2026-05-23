@@ -12,6 +12,11 @@ enum UserRole {
   STAFF
 }
 
+enum ProductStatus {
+  active
+  inactive
+}
+
 model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
@@ -44,11 +49,12 @@ model Client {
 }
 
 model Product {
-  id       Int     @id @default(autoincrement())
+  id       Int           @id @default(autoincrement())
   clientId Int
   name     String
-  price    Decimal @db.Decimal(10, 2)
+  price    Decimal       @db.Decimal(10, 2)
   category String
+  status   ProductStatus @default(active)
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
@@ -60,6 +66,7 @@ model Product {
 
   @@index([clientId])
   @@index([category])
+  @@index([status])
 }
 
 model ProductOption {

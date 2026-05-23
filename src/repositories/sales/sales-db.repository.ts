@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, ProductStatus } from '@prisma/client';
 import { CreateSaleDto } from 'src/api/sales/dto/create-sale.dto';
 import { Sale, SaleProductEntry, SaleProductLine } from 'src/models/sales.models';
 import { decimalToNumber } from 'src/shared/prisma.util';
@@ -110,7 +110,7 @@ export class SalesDBRepository {
     }
 
     const product = await tx.product.findFirst({
-      where: { id: productId, clientId },
+      where: { id: productId, clientId, status: ProductStatus.active },
     });
 
     if (!product) {

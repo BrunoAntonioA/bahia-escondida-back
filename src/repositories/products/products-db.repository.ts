@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, ProductStatus } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { CreateProductDto } from 'src/api/products/dto/create-product.dto';
 import { Product, ProductOption } from 'src/models/products.models';
@@ -31,6 +31,7 @@ export class ProductsDBRepository {
         price: product.price,
         category: product.category,
         clientId,
+        status: ProductStatus.active,
         ...(product.options?.length && {
           options: {
             create: product.options.map((option) => ({
@@ -51,7 +52,7 @@ export class ProductsDBRepository {
     tx: PrismaService = this.prismaService,
   ): Promise<Product[]> {
     const products = await tx.product.findMany({
-      where: { clientId },
+      where: { clientId, status: ProductStatus.active },
       include: productWithOptions,
       orderBy: { name: 'asc' },
     });
@@ -59,17 +60,23 @@ export class ProductsDBRepository {
     return products.map((item) => this.toProduct(item));
   }
 
-  public async delete(
+  public async deactivate(
     clientId: number,
     productId: number,
     tx: PrismaService = this.prismaService,
-  ): Promise<void> {
-    await tx.product.delete({
+  ): Promise<Product> {
+    const updatedProduct = await tx.product.update({
       where: {
         id: productId,
         clientId,
       },
+      data: {
+        status: ProductStatus.inactive,
+      },
+      include: productWithOptions,
     });
+
+    return this.toProduct(updatedProduct);
   }
 
   public async findByIdForClient(
@@ -78,7 +85,7 @@ export class ProductsDBRepository {
     tx: PrismaService = this.prismaService,
   ): Promise<Product | null> {
     const product = await tx.product.findFirst({
-      where: { id: productId, clientId },
+      where: { id: productId, clientId, status: ProductStatus.active },
       include: productWithOptions,
     });
 
@@ -103,13 +110,16 @@ export class ProductsDBRepository {
       name: product.name,
       price: decimalToNumber(product.price),
       category: product.category as Product['category'],
+      status: product.status,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
       options: product.options.map((option) => this.toProductOption(option)),
     });
   }
 
-  private toProductOption(option: ProductWithOptions['options'][number]): ProductOption {
+  private toProductOption(
+    option: ProductWithOptions['options'][number],
+  ): ProductOption {
     return plainToInstance(ProductOption, {
       id: option.id,
       productId: option.productId,

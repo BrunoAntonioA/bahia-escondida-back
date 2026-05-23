@@ -3,6 +3,11 @@ export enum ProductCategory {
   DRINKS = 'DRINKS',
 }
 
+export enum ProductStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
 export class ProductOption {
   id: number;
   productId: number;
@@ -19,6 +24,7 @@ export class BaseProduct {
 
 export class Product extends BaseProduct {
   id: number;
+  status: ProductStatus;
   createdAt: Date;
   updatedAt: Date;
   options: ProductOption[];
