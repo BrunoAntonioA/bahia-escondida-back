@@ -1,56 +1,76 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
+import { CurrentClientId } from 'src/api/auth/decorators/current-client-id.decorator';
+import { CreateSaleDto } from './dto/create-sale.dto';
 import { SalesService } from 'src/services/sales/sales.service';
 
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
+  @Get()
+  getSalesByClient(@CurrentClientId() clientId: number) {
+    return this.salesService.getSalesByClientId(clientId);
+  }
+
   @Post()
-  createSale(@Body() body) {
-    console.log('Received sale creation request: ', body);
-    return this.salesService.create(body);
+  createSale(
+    @CurrentClientId() clientId: number,
+    @Body() body: CreateSaleDto,
+  ) {
+    return this.salesService.create(clientId, body);
   }
 
   @Get('/:saleId')
-  getSaleById(@Param('saleId') saleId: number) {
-    console.log('Retrieving sale with id: ', saleId);
-    return this.salesService.getSaleById(saleId);
+  getSaleById(
+    @CurrentClientId() clientId: number,
+    @Param('saleId', ParseIntPipe) saleId: number,
+  ) {
+    return this.salesService.getSaleById(clientId, saleId);
   }
 
   @Post('add-product')
-  addProductToSale(@Body() body) {
-    console.log('Received new product to sale: ', body);
+  addProductToSale(
+    @CurrentClientId() clientId: number,
+    @Body() body: { saleId: number; productId: number; quantity: number },
+  ) {
     return this.salesService.addProductToSale(
+      clientId,
       body.saleId,
       body.productId,
       body.quantity,
     );
   }
 
-  @Get('/client/:clientId')
-  getSaleByClientId(@Param('clientId') clientId: number) {
-    console.log('Retrieving sales with client id: ', clientId);
-    return this.salesService.getSalesByClientId(clientId);
-  }
-
   @Post('close/:saleId')
-  closeSale(@Param('saleId') saleId: number) {
-    console.log('Received sale to close with id: ', saleId);
-    return this.salesService.closeSale(saleId);
+  closeSale(
+    @CurrentClientId() clientId: number,
+    @Param('saleId', ParseIntPipe) saleId: number,
+  ) {
+    return this.salesService.closeSale(clientId, saleId);
   }
 
   @Delete(':saleId')
-  deleteSale(@Param('saleId') saleId: number) {
-    console.log('Received sale to delete with id: ', saleId);
-    return this.salesService.deleteSale(saleId);
+  deleteSale(
+    @CurrentClientId() clientId: number,
+    @Param('saleId', ParseIntPipe) saleId: number,
+  ) {
+    return this.salesService.deleteSale(clientId, saleId);
   }
 
   @Delete(':saleId/product/:productId')
   deleteSaleProduct(
-    @Param('saleId') saleId: number,
-    @Param('productId') productId: number,
+    @CurrentClientId() clientId: number,
+    @Param('saleId', ParseIntPipe) saleId: number,
+    @Param('productId', ParseIntPipe) productId: number,
   ) {
-    console.log('Received product sale to delete with: ', saleId, productId);
-    return this.salesService.deleteSaleProduct(saleId, productId);
+    return this.salesService.deleteSaleProduct(clientId, saleId, productId);
   }
 }

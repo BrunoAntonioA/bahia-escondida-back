@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { CurrentClientId } from 'src/api/auth/decorators/current-client-id.decorator';
 import { PaymentsService } from 'src/services/payments/payments.service';
 
 @Controller('payments')
@@ -6,10 +7,20 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post()
-  createPayment(@Body() body) {
-    console.log('Received sale creation request: ', body);
+  createPayment(
+    @CurrentClientId() clientId: number,
+    @Body()
+    body: {
+      cardPaid: number;
+      cashPaid: number;
+      transferPaid: number;
+      tipPaid: number;
+      saleId: number;
+    },
+  ) {
     const { cardPaid, cashPaid, transferPaid, tipPaid, saleId } = body;
     return this.paymentsService.create(
+      clientId,
       cardPaid,
       cashPaid,
       transferPaid,

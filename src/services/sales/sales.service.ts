@@ -1,20 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateSaleDto } from 'src/api/sales/dto/create-sale.dto';
+import { matchesClientId } from 'src/shared/client-id.util';
 import { DbLowService } from '../db-low/db-low.service';
-import { BaseSale } from 'src/models/sales.models';
 
 @Injectable()
 export class SalesService {
   constructor(private readonly db: DbLowService) {}
 
-  findAll() {
-    const state = this.db.read();
-    return state.sales;
-  }
-
-  create(sale: BaseSale) {
+  create(clientId: number, sale: CreateSaleDto) {
     const newSale = {
       id: Date.now(),
       createdAt: new Date(),
+      clientId,
+      status: 'abierta',
+      products: [],
       ...sale,
     };
 
@@ -25,15 +28,12 @@ export class SalesService {
     return newSale;
   }
 
-  getSaleById(saleId: number) {
+  getSaleById(clientId: number, saleId: number) {
+    const sale = this.findSaleOrThrow(clientId, saleId);
     const state = this.db.read();
 
-    const sale = state.sales.find((s) => s.id === Number(saleId));
-
-    if (!sale) return null;
-
     const saleProducts = state.saleProducts.filter(
-      (sp) => sp.saleId === Number(saleId),
+      (sp) => sp.saleId === saleId,
     );
 
     const products = saleProducts
@@ -55,27 +55,35 @@ export class SalesService {
     };
   }
 
-  addProductToSale(saleId: number, productId: number, quantity: number) {
+  addProductToSale(
+    clientId: number,
+    saleId: number,
+    productId: number,
+    quantity: number,
+  ) {
+    this.findSaleOrThrow(clientId, saleId);
+
     const state = this.db.read();
 
-    const productExists = state.products.some(
-      (p) => p.id === Number(productId),
-    );
+    const product = state.products.find((p) => p.id === productId);
 
-    if (!productExists) {
-      throw new Error('Product does not exist');
+    if (!product) {
+      throw new NotFoundException('Product does not exist');
+    }
+
+    if (!matchesClientId(product.clientId, clientId)) {
+      throw new ForbiddenException('Product does not belong to this client');
     }
 
     const existingSaleProduct = state.saleProducts.find(
-      (sp) =>
-        sp.saleId === Number(saleId) && sp.productId === Number(productId),
+      (sp) => sp.saleId === saleId && sp.productId === productId,
     );
 
     if (!existingSaleProduct) {
       const newSaleProduct = {
         id: Date.now(),
-        saleId: Number(saleId),
-        productId: Number(productId),
+        saleId,
+        productId,
         quantity: Number(quantity),
       };
 
@@ -87,14 +95,13 @@ export class SalesService {
 
     existingSaleProduct.quantity += Number(quantity);
     this.db.save(state);
+
+    return existingSaleProduct;
   }
 
-  closeSale(saleId: number) {
+  closeSale(clientId: number, saleId: number) {
     const state = this.db.read();
-
-    const sale = state.sales.find((s) => s.id === Number(saleId));
-
-    if (!sale) return null;
+    const sale = this.findSaleInState(state, clientId, saleId);
 
     sale.status = 'cerrada';
     sale.closedAt = new Date();
@@ -104,13 +111,14 @@ export class SalesService {
     return sale;
   }
 
-  deleteSale(saleId: number) {
+  deleteSale(clientId: number, saleId: number) {
+    this.findSaleOrThrow(clientId, saleId);
+
     const state = this.db.read();
 
-    state.sales = state.sales.filter((s) => s.id !== Number(saleId));
-
+    state.sales = state.sales.filter((s) => s.id !== saleId);
     state.saleProducts = state.saleProducts.filter(
-      (sp) => sp.saleId !== Number(saleId),
+      (sp) => sp.saleId !== saleId,
     );
 
     this.db.save(state);
@@ -121,7 +129,9 @@ export class SalesService {
   getSalesByClientId(clientId: number) {
     const state = this.db.read();
 
-    const sales = state.sales.filter((s) => s.clientId === clientId);
+    const sales = state.sales.filter((s) =>
+      matchesClientId(s.clientId, clientId),
+    );
 
     return sales.map((sale) => {
       const saleProducts = state.saleProducts.filter(
@@ -148,23 +158,34 @@ export class SalesService {
     });
   }
 
-  deleteSaleProduct(saleId: number, productId: number) {
-    console.log('saleId: ', saleId);
-    console.log('productId: ', productId);
+  deleteSaleProduct(clientId: number, saleId: number, productId: number) {
+    this.findSaleOrThrow(clientId, saleId);
 
     const state = this.db.read();
 
-    console.log(
-      state.saleProducts.filter(
-        (s) => s.saleId === saleId && s.productId === productId,
-      ),
-    );
-
     state.saleProducts = state.saleProducts.filter(
-      (s) =>
-        !(s.saleId === Number(saleId) && s.productId === Number(productId)),
+      (s) => !(s.saleId === saleId && s.productId === productId),
     );
 
     this.db.save(state);
+  }
+
+  private findSaleOrThrow(clientId: number, saleId: number) {
+    const state = this.db.read();
+    return this.findSaleInState(state, clientId, saleId);
+  }
+
+  private findSaleInState(state: ReturnType<DbLowService['read']>, clientId: number, saleId: number) {
+    const sale = state.sales.find((s) => s.id === saleId);
+
+    if (!sale) {
+      throw new NotFoundException('Sale not found');
+    }
+
+    if (!matchesClientId(sale.clientId, clientId)) {
+      throw new ForbiddenException('Sale does not belong to this client');
+    }
+
+    return sale;
   }
 }

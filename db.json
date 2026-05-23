@@ -34,6 +34,20 @@
       "name": "bebidas",
       "category": "Bebestible",
       "price": 2000
+    },
+    {
+      "id": 1779507094439,
+      "clientId": "bahia-escondida",
+      "name": "Pastel de papas",
+      "category": "Comida",
+      "price": 1400
+    },
+    {
+      "id": 1779507223588,
+      "clientId": "bahia-escondida",
+      "name": "Merluza c papas",
+      "category": "Comida",
+      "price": 24000
     }
   ],
   "sales": [
@@ -53,6 +67,331 @@
       "tableNumber": 0,
       "isDelivery": true,
       "customerNickname": "Carlita",
+      "clientId": "bahia-escondida",
+      "status": "cerrada",
+      "closedAt": "2026-03-09T20:04:56.672Z"
+    },
+    {
+      "id": 1779505894847,
+      "createdAt": "2026-05-23T03:11:34.847Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505895603,
+      "createdAt": "2026-05-23T03:11:35.603Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505895948,
+      "createdAt": "2026-05-23T03:11:35.948Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505896174,
+      "createdAt": "2026-05-23T03:11:36.174Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505896374,
+      "createdAt": "2026-05-23T03:11:36.374Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505896615,
+      "createdAt": "2026-05-23T03:11:36.615Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505896814,
+      "createdAt": "2026-05-23T03:11:36.814Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505897068,
+      "createdAt": "2026-05-23T03:11:37.068Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505897269,
+      "createdAt": "2026-05-23T03:11:37.269Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505897469,
+      "createdAt": "2026-05-23T03:11:37.469Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505897695,
+      "createdAt": "2026-05-23T03:11:37.695Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505897867,
+      "createdAt": "2026-05-23T03:11:37.867Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505898029,
+      "createdAt": "2026-05-23T03:11:38.029Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505898255,
+      "createdAt": "2026-05-23T03:11:38.255Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505905965,
+      "createdAt": "2026-05-23T03:11:45.965Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906135,
+      "createdAt": "2026-05-23T03:11:46.135Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906281,
+      "createdAt": "2026-05-23T03:11:46.281Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906440,
+      "createdAt": "2026-05-23T03:11:46.440Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906587,
+      "createdAt": "2026-05-23T03:11:46.587Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906761,
+      "createdAt": "2026-05-23T03:11:46.761Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505906921,
+      "createdAt": "2026-05-23T03:11:46.921Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505907067,
+      "createdAt": "2026-05-23T03:11:47.067Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505907202,
+      "createdAt": "2026-05-23T03:11:47.202Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779505907360,
+      "createdAt": "2026-05-23T03:11:47.360Z",
+      "tableNumber": 0,
+      "isDelivery": false,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506148590,
+      "createdAt": "2026-05-23T03:15:48.590Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149117,
+      "createdAt": "2026-05-23T03:15:49.117Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149318,
+      "createdAt": "2026-05-23T03:15:49.318Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149491,
+      "createdAt": "2026-05-23T03:15:49.491Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149650,
+      "createdAt": "2026-05-23T03:15:49.650Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149825,
+      "createdAt": "2026-05-23T03:15:49.825Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506149970,
+      "createdAt": "2026-05-23T03:15:49.970Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506150133,
+      "createdAt": "2026-05-23T03:15:50.133Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506150308,
+      "createdAt": "2026-05-23T03:15:50.308Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506150466,
+      "createdAt": "2026-05-23T03:15:50.466Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779506150624,
+      "createdAt": "2026-05-23T03:15:50.624Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "",
+      "clientId": "bahia-escondida",
+      "status": "abierta"
+    },
+    {
+      "id": 1779507769473,
+      "createdAt": "2026-05-23T03:42:49.473Z",
+      "tableNumber": 0,
+      "isDelivery": true,
+      "customerNickname": "Carlos",
       "clientId": "bahia-escondida",
       "status": "abierta"
     }
@@ -86,6 +425,18 @@
       "id": 1769656863407,
       "saleId": 1769656842896,
       "productId": 1769656658818,
+      "quantity": 1
+    },
+    {
+      "id": 1773086645335,
+      "saleId": 1769656842896,
+      "productId": 1769656617606,
+      "quantity": 1
+    },
+    {
+      "id": 1773086645338,
+      "saleId": 1769656842896,
+      "productId": 1769656588898,
       "quantity": 1
     }
   ],

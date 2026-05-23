@@ -1,41 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateProductDto } from 'src/api/products/dto/create-product.dto';
+import { matchesClientId } from 'src/shared/client-id.util';
 import { DbLowService } from '../db-low/db-low.service';
-import { BaseProduct } from 'src/models/products.models';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly db: DbLowService) {}
 
-  findAll() {
-    const state = this.db.read();
-    return state.products;
-  }
-
-  create(product: BaseProduct) {
+  create(clientId: number, product: CreateProductDto) {
     const newProduct = {
       id: Date.now(),
+      clientId,
       ...product,
     };
 
     const state = this.db.read();
     state.products.push(newProduct);
-    this.db['save'](state); // internal safe write
+    this.db['save'](state);
 
     return newProduct;
   }
 
-  getClientProducts(clientId: string) {
+  getClientProducts(clientId: number) {
     const state = this.db.read();
-    return state.products.filter((product) => product.clientId === clientId);
+    return state.products.filter((product) =>
+      matchesClientId(product.clientId, clientId),
+    );
   }
 
-  delete(productId: string) {
+  delete(clientId: number, productId: number) {
     const state = this.db.read();
+    const product = state.products.find((p) => p.id === productId);
 
-    state.products = state.products.filter(
-      (product) => product.id !== Number(productId),
-    );
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
 
+    if (!matchesClientId(product.clientId, clientId)) {
+      throw new ForbiddenException('Product does not belong to this client');
+    }
+
+    state.products = state.products.filter((p) => p.id !== productId);
     this.db['save'](state);
 
     return { deletedProductId: productId };
