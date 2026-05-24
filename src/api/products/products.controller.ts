@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { CurrentClientId } from 'src/api/auth/decorators/current-client-id.decorator';
+import { AddProductOptionsDto } from './dto/add-product-options.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductsService } from 'src/services/products/products.service';
 
@@ -26,6 +27,15 @@ export class ProductsController {
     @Body() body: CreateProductDto,
   ) {
     return this.productsService.create(clientId, body);
+  }
+
+  @Post(':productId/options')
+  addProductOptions(
+    @CurrentClientId() clientId: number,
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() body: AddProductOptionsDto,
+  ) {
+    return this.productsService.addOptions(clientId, productId, body);
   }
 
   @Delete('/:productId')

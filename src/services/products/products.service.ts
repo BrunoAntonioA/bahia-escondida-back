@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { AddProductOptionsDto } from 'src/api/products/dto/add-product-options.dto';
 import { CreateProductDto } from 'src/api/products/dto/create-product.dto';
 import { Product } from 'src/models/products.models';
 import { ProductsDBRepository } from 'src/repositories/products/products-db.repository';
@@ -27,5 +28,23 @@ export class ProductsService {
       }
       throw error;
     }
+  }
+
+  public async addOptions(
+    clientId: number,
+    productId: number,
+    dto: AddProductOptionsDto,
+  ): Promise<Product> {
+    const product = await this.productsRepository.addOptions(
+      clientId,
+      productId,
+      dto.options,
+    );
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
   }
 }

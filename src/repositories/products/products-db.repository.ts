@@ -96,6 +96,36 @@ export class ProductsDBRepository {
     return this.toProduct(product);
   }
 
+  public async addOptions(
+    clientId: number,
+    productId: number,
+    options: { name: string; price: number }[],
+    tx: PrismaService = this.prismaService,
+  ): Promise<Product | null> {
+    const product = await tx.product.findFirst({
+      where: { id: productId, clientId, status: ProductStatus.active },
+    });
+
+    if (!product) {
+      return null;
+    }
+
+    const updatedProduct = await tx.product.update({
+      where: { id: productId },
+      data: {
+        options: {
+          create: options.map((option) => ({
+            name: option.name,
+            price: option.price,
+          })),
+        },
+      },
+      include: productWithOptions,
+    });
+
+    return this.toProduct(updatedProduct);
+  }
+
   public isNotFoundError(error: unknown): boolean {
     return (
       error instanceof Prisma.PrismaClientKnownRequestError &&
