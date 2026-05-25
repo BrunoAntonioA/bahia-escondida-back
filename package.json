@@ -22,7 +22,8 @@
     "prisma:generate": "npm run prisma:format && npx prisma generate --schema ./prisma/schema.prisma",
     "prisma:migrate": "source .setlocalenv.sh && npm run prisma:format && npx prisma migrate dev --schema ./prisma/schema.prisma",
     "prisma:migrate:draft": "source .setlocalenv.sh && npx prisma format --schema ./prisma/schema.prisma && npx prisma migrate dev --create-only --schema ./prisma/schema.prisma",
-    "prisma:seed": "source .setlocalenv.sh && npx prisma db seed"
+    "prisma:seed": "source .setlocalenv.sh && npx prisma db seed",
+    "openapi:export": "npm run build && EXPORT_OPENAPI=true node dist/src/main.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -33,6 +34,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.4.2",
     "@prisma/client": "5.13.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "0.5.1",

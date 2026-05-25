@@ -3,9 +3,9 @@ import { Sale } from './sales.models';
 
 export class BaseClient {
   name: string;
-  email: string;
-  phone: string;
-  address: string;
+  email?: string;
+  phone?: string;
+  address?: string;
 }
 
 export class Client extends BaseClient {

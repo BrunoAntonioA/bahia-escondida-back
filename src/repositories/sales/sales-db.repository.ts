@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, ProductStatus } from '@prisma/client';
 import { CreateSaleDto } from 'src/api/sales/dto/create-sale.dto';
-import { Sale, SaleProductEntry, SaleProductLine } from 'src/models/sales.models';
+import { AddProductToSaleDto } from 'src/api/sales/dto/add-product-to-sale.dto';
+import { Sale, SaleProductLine } from 'src/models/sales.models';
 import { decimalToNumber } from 'src/shared/prisma.util';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 
@@ -9,11 +10,16 @@ const saleWithLines = {
   products: {
     include: {
       product: true,
+      options: {
+        orderBy: { id: 'asc' as const },
+      },
     },
+    orderBy: { id: 'asc' as const },
   },
 } satisfies Prisma.SaleInclude;
 
 type SaleWithLines = Prisma.SaleGetPayload<{ include: typeof saleWithLines }>;
+type SaleProductWithOptions = SaleWithLines['products'][number];
 
 @Injectable()
 export class SalesDBRepository {
@@ -94,77 +100,79 @@ export class SalesDBRepository {
     });
   }
 
-  public async addProductToSale(
+  public async addProductWithOptions(
     clientId: number,
-    saleId: number,
-    productId: number,
-    quantity: number,
+    dto: AddProductToSaleDto,
     tx: PrismaService = this.prismaService,
-  ): Promise<SaleProductEntry | null> {
+  ): Promise<
+    SaleProductLine | 'sale_not_found' | 'product_not_found' | 'options_required' | 'invalid_options'
+  > {
     const sale = await tx.sale.findFirst({
-      where: { id: saleId, clientId },
+      where: { id: dto.saleId, clientId },
     });
 
     if (!sale) {
-      return null;
+      return 'sale_not_found';
     }
 
     const product = await tx.product.findFirst({
-      where: { id: productId, clientId, status: ProductStatus.active },
+      where: { id: dto.productId, clientId, status: ProductStatus.active },
+      include: { options: true },
     });
 
     if (!product) {
-      return null;
+      return 'product_not_found';
     }
 
-    const existing = await tx.saleProduct.findUnique({
-      where: {
-        saleId_productId: { saleId, productId },
-      },
-    });
+    const selectedOptionIds = dto.selectedOptionIds ?? [];
 
-    if (existing) {
-      const updated = await tx.saleProduct.update({
-        where: { id: existing.id },
-        data: { quantity: { increment: quantity } },
-      });
+    if (product.options.length > 0 && selectedOptionIds.length === 0) {
+      return 'options_required';
+    }
 
-      return {
-        id: updated.id,
-        saleId: updated.saleId,
-        productId: updated.productId,
-        quantity: updated.quantity,
-      };
+    const selectedOptions = product.options.filter((option) =>
+      selectedOptionIds.includes(option.id),
+    );
+
+    if (selectedOptionIds.length !== selectedOptions.length) {
+      return 'invalid_options';
     }
 
     const created = await tx.saleProduct.create({
       data: {
-        saleId,
-        productId,
+        saleId: dto.saleId,
+        productId: dto.productId,
         name: product.name,
         price: product.price,
-        quantity,
+        quantity: dto.quantity ?? 1,
+        observation: dto.observation,
+        options: {
+          create: selectedOptions.map((option) => ({
+            productOptionId: option.id,
+            optionName: option.name,
+            price: option.price,
+          })),
+        },
+      },
+      include: {
+        product: true,
+        options: { orderBy: { id: 'asc' } },
       },
     });
 
-    return {
-      id: created.id,
-      saleId: created.saleId,
-      productId: created.productId,
-      quantity: created.quantity,
-    };
+    return this.toSaleProductLine(created);
   }
 
-  public async deleteSaleProduct(
+  public async deleteSaleProductLine(
     clientId: number,
     saleId: number,
-    productId: number,
+    saleProductId: number,
     tx: PrismaService = this.prismaService,
   ): Promise<boolean> {
     const result = await tx.saleProduct.deleteMany({
       where: {
+        id: saleProductId,
         saleId,
-        productId,
         sale: { clientId },
       },
     });
@@ -212,17 +220,21 @@ export class SalesDBRepository {
     };
   }
 
-  private toSaleProductLine(
-    line: SaleWithLines['products'][number],
-  ): SaleProductLine {
+  private toSaleProductLine(line: SaleProductWithOptions): SaleProductLine {
     return {
       id: line.id,
       productId: line.productId,
       name: line.name,
       price: decimalToNumber(line.price),
       quantity: line.quantity,
+      observation: line.observation ?? undefined,
       category: line.product.category,
-      clientId: line.product.clientId,
+      selectedOptions: line.options.map((option) => ({
+        id: option.id,
+        productOptionId: option.productOptionId,
+        optionName: option.optionName,
+        price: decimalToNumber(option.price),
+      })),
     };
   }
 }

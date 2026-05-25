@@ -1,8 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArrayMinSize, IsArray, ValidateNested } from 'class-validator';
 import { CreateProductOptionDto } from './create-product-option.dto';
 
 export class AddProductOptionsDto {
+  @ApiProperty({ type: [CreateProductOptionDto] })
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })

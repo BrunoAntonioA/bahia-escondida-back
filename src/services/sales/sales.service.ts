@@ -1,20 +1,47 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { AddProductToSaleDto } from 'src/api/sales/dto/add-product-to-sale.dto';
 import { CreateSaleDto } from 'src/api/sales/dto/create-sale.dto';
-import { Sale } from 'src/models/sales.models';
+import { Sale, SaleProductLine } from 'src/models/sales.models';
 import { SalesDBRepository } from 'src/repositories/sales/sales-db.repository';
+import { AppLoggerService } from 'src/services/logging/app-logger.service';
+
+const LOG_CONTEXT = 'SalesService';
 
 @Injectable()
 export class SalesService {
-  constructor(private readonly salesRepository: SalesDBRepository) {}
+  constructor(
+    private readonly salesRepository: SalesDBRepository,
+    private readonly appLogger: AppLoggerService,
+  ) {}
 
   public async create(clientId: number, sale: CreateSaleDto): Promise<Sale> {
-    return this.salesRepository.create(clientId, sale);
+    this.appLogger.log(LOG_CONTEXT, 'Creating sale', {
+      clientId,
+      isDelivery: sale.isDelivery,
+      tableNumber: sale.tableNumber,
+    });
+
+    const created = await this.salesRepository.create(clientId, sale);
+
+    this.appLogger.log(LOG_CONTEXT, 'Sale created', {
+      clientId,
+      saleId: created.id,
+    });
+
+    return created;
   }
 
   public async getSaleById(clientId: number, saleId: number): Promise<Sale> {
+    this.appLogger.log(LOG_CONTEXT, 'Fetching sale', { clientId, saleId });
+
     const sale = await this.salesRepository.findByIdForClient(clientId, saleId);
 
     if (!sale) {
+      this.appLogger.warn(LOG_CONTEXT, 'Sale not found', { clientId, saleId });
       throw new NotFoundException('Sale not found');
     }
 
@@ -23,80 +50,169 @@ export class SalesService {
 
   public async addProductToSale(
     clientId: number,
-    saleId: number,
-    productId: number,
-    quantity: number,
-  ) {
-    const line = await this.salesRepository.addProductToSale(
+    dto: AddProductToSaleDto,
+  ): Promise<SaleProductLine> {
+    this.appLogger.log(LOG_CONTEXT, 'Adding product to sale', {
       clientId,
-      saleId,
-      productId,
-      quantity,
+      saleId: dto.saleId,
+      productId: dto.productId,
+      quantity: dto.quantity ?? 1,
+      selectedOptionIds: dto.selectedOptionIds ?? [],
+    });
+
+    const result = await this.salesRepository.addProductWithOptions(
+      clientId,
+      dto,
     );
 
-    if (!line) {
-      const sale = await this.salesRepository.findByIdForClient(
+    if (result === 'sale_not_found') {
+      this.appLogger.warn(LOG_CONTEXT, 'Sale not found when adding product', {
         clientId,
-        saleId,
-      );
-
-      if (!sale) {
-        throw new NotFoundException('Sale not found');
-      }
-
-      throw new NotFoundException('Product does not exist');
+        saleId: dto.saleId,
+      });
+      throw new NotFoundException('Sale not found');
     }
 
-    return line;
+    if (result === 'product_not_found') {
+      this.appLogger.warn(LOG_CONTEXT, 'Product not found when adding to sale', {
+        clientId,
+        saleId: dto.saleId,
+        productId: dto.productId,
+      });
+      throw new NotFoundException('Product not found');
+    }
+
+    if (result === 'options_required') {
+      throw new BadRequestException(
+        'This product requires at least one option to be selected',
+      );
+    }
+
+    if (result === 'invalid_options') {
+      throw new BadRequestException(
+        'One or more selected options are invalid for this product',
+      );
+    }
+
+    this.appLogger.log(LOG_CONTEXT, 'Product added to sale', {
+      clientId,
+      saleId: dto.saleId,
+      saleProductId: result.id,
+      selectedOptionsCount: result.selectedOptions.length,
+    });
+
+    return result;
   }
 
   public async closeSale(clientId: number, saleId: number): Promise<Sale> {
+    this.appLogger.log(LOG_CONTEXT, 'Closing sale', { clientId, saleId });
+
     try {
-      return await this.salesRepository.close(clientId, saleId);
+      const sale = await this.salesRepository.close(clientId, saleId);
+
+      this.appLogger.log(LOG_CONTEXT, 'Sale closed', {
+        clientId,
+        saleId,
+        status: sale.status,
+      });
+
+      return sale;
     } catch (error) {
       if (this.salesRepository.isNotFoundError(error)) {
+        this.appLogger.warn(LOG_CONTEXT, 'Sale not found for closing', {
+          clientId,
+          saleId,
+        });
         throw new NotFoundException('Sale not found');
       }
+
+      this.appLogger.error(LOG_CONTEXT, 'Failed to close sale', error, {
+        clientId,
+        saleId,
+      });
       throw error;
     }
   }
 
   public async deleteSale(clientId: number, saleId: number) {
+    this.appLogger.log(LOG_CONTEXT, 'Deleting sale', { clientId, saleId });
+
     try {
       await this.salesRepository.delete(clientId, saleId);
+
+      this.appLogger.log(LOG_CONTEXT, 'Sale deleted', { clientId, saleId });
+
+      return { deletedSaleId: saleId };
     } catch (error) {
       if (this.salesRepository.isNotFoundError(error)) {
+        this.appLogger.warn(LOG_CONTEXT, 'Sale not found for deletion', {
+          clientId,
+          saleId,
+        });
         throw new NotFoundException('Sale not found');
       }
+
+      this.appLogger.error(LOG_CONTEXT, 'Failed to delete sale', error, {
+        clientId,
+        saleId,
+      });
       throw error;
     }
-
-    return { deletedSaleId: saleId };
   }
 
   public async getSalesByClientId(clientId: number): Promise<Sale[]> {
-    return this.salesRepository.findByClientId(clientId);
+    this.appLogger.log(LOG_CONTEXT, 'Fetching sales', { clientId });
+
+    const sales = await this.salesRepository.findByClientId(clientId);
+
+    this.appLogger.log(LOG_CONTEXT, 'Sales fetched', {
+      clientId,
+      count: sales.length,
+    });
+
+    return sales;
   }
 
-  public async deleteSaleProduct(
+  public async deleteSaleProductLine(
     clientId: number,
     saleId: number,
-    productId: number,
+    saleProductId: number,
   ) {
+    this.appLogger.log(LOG_CONTEXT, 'Removing product line from sale', {
+      clientId,
+      saleId,
+      saleProductId,
+    });
+
     const sale = await this.salesRepository.findByIdForClient(clientId, saleId);
 
     if (!sale) {
+      this.appLogger.warn(LOG_CONTEXT, 'Sale not found when removing product line', {
+        clientId,
+        saleId,
+      });
       throw new NotFoundException('Sale not found');
     }
 
-    const deleted = await this.salesRepository.deleteSaleProduct(
+    const deleted = await this.salesRepository.deleteSaleProductLine(
       clientId,
       saleId,
-      productId,
+      saleProductId,
     );
 
     if (!deleted) {
-      throw new NotFoundException('Sale product not found');
+      this.appLogger.warn(LOG_CONTEXT, 'Sale product line not found for removal', {
+        clientId,
+        saleId,
+        saleProductId,
+      });
+      throw new NotFoundException('Sale product line not found');
     }
+
+    this.appLogger.log(LOG_CONTEXT, 'Product line removed from sale', {
+      clientId,
+      saleId,
+      saleProductId,
+    });
   }
 }

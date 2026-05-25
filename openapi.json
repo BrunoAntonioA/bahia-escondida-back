@@ -1,0 +1,1271 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Register a new user",
+        "description": "Public endpoint. Returns user profile and JWT access token.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Login",
+        "description": "Public endpoint. Returns user profile and JWT access token.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "summary": "Get current authenticated user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/clients": {
+      "post": {
+        "operationId": "ClientsController_createClient",
+        "summary": "Create a business client (tenant)",
+        "description": "Creates a new restaurant/business. Requires authentication.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "clients"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/products": {
+      "get": {
+        "operationId": "ProductsController_getClientProducts",
+        "summary": "List active products",
+        "description": "Returns all active products with their options for the authenticated client.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "products"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ProductsController_createProduct",
+        "summary": "Create a product",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "products"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/products/{productId}/options": {
+      "post": {
+        "operationId": "ProductsController_addProductOptions",
+        "summary": "Add options to an existing product",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProductOptionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "products"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/products/{productId}": {
+      "delete": {
+        "operationId": "ProductsController_deleteProduct",
+        "summary": "Deactivate a product",
+        "description": "Soft delete — sets product status to inactive.",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "products"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sales": {
+      "get": {
+        "operationId": "SalesController_getSalesByClient",
+        "summary": "List sales for the authenticated client",
+        "description": "Includes product lines and selected options for each sale.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SaleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SalesController_createSale",
+        "summary": "Create a new sale",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSaleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sales/{saleId}": {
+      "get": {
+        "operationId": "SalesController_getSaleById",
+        "summary": "Get a sale by id",
+        "parameters": [
+          {
+            "name": "saleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "SalesController_deleteSale",
+        "summary": "Delete a sale",
+        "parameters": [
+          {
+            "name": "saleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletedSaleDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sales/add-product": {
+      "post": {
+        "operationId": "SalesController_addProductToSale",
+        "summary": "Add a product to a sale with selected options",
+        "description": "Creates a sale line item. If the product has options, selectedOptionIds is required.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProductToSaleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleProductLineDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleProductLine"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sales/close/{saleId}": {
+      "post": {
+        "operationId": "SalesController_closeSale",
+        "summary": "Close a sale",
+        "parameters": [
+          {
+            "name": "saleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/sales/{saleId}/lines/{saleProductId}": {
+      "delete": {
+        "operationId": "SalesController_deleteSaleProductLine",
+        "summary": "Remove a product line from a sale",
+        "parameters": [
+          {
+            "name": "saleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "saleProductId",
+            "required": true,
+            "in": "path",
+            "description": "Sale line item id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "204": {
+            "description": "Line item removed"
+          }
+        },
+        "tags": [
+          "sales"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/payments": {
+      "post": {
+        "operationId": "PaymentsController_createPayment",
+        "summary": "Register a payment for a sale",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "payments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Bahia Escondida API",
+    "description": "REST API for Bahia Escondida backend. Authenticated routes require a Bearer JWT. The clientId is taken from the token — do not send it in request bodies for tenant-scoped resources.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Registration, login, and session"
+    },
+    {
+      "name": "clients",
+      "description": "Business tenant management"
+    },
+    {
+      "name": "products",
+      "description": "Menu products and options"
+    },
+    {
+      "name": "sales",
+      "description": "Orders / tabs"
+    },
+    {
+      "name": "payments",
+      "description": "Sale payments"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "JWT access token from POST /auth/login or POST /auth/register"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "staff@restaurant.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "secret12345"
+          },
+          "name": {
+            "type": "string",
+            "example": "Maria"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "STAFF"
+            ],
+            "example": "STAFF"
+          },
+          "clientId": {
+            "type": "number",
+            "example": 1,
+            "description": "Business client id the user belongs to"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "PublicUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "example": "staff@restaurant.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "Maria"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "STAFF"
+            ],
+            "example": "STAFF"
+          },
+          "clientId": {
+            "type": "number",
+            "example": 1,
+            "description": "Business client id linked to this user"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/PublicUserDto"
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "JWT access token"
+          }
+        },
+        "required": [
+          "user",
+          "accessToken"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "staff@restaurant.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "example": "secret12345"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Bahia Escondida"
+          },
+          "email": {
+            "type": "string",
+            "example": "contact@bahia.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+56912345678"
+          },
+          "address": {
+            "type": "string",
+            "example": "Av. Costanera 123"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Bahia Escondida"
+          },
+          "email": {
+            "type": "string",
+            "example": "contact@bahia.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+56912345678"
+          },
+          "address": {
+            "type": "string",
+            "example": "Av. Costanera 123"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ProductOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "productId": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Burger"
+          },
+          "price": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "id",
+          "productId",
+          "name",
+          "price"
+        ]
+      },
+      "ProductDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "clientId": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Promo 5"
+          },
+          "price": {
+            "type": "number",
+            "example": 15000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "FOOD",
+              "DRINKS"
+            ],
+            "example": "FOOD"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "example": "active"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductOptionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "name",
+          "price",
+          "category",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "options"
+        ]
+      },
+      "CreateProductOptionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Burger"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 0,
+            "description": "Extra charge for this option (0 if included)"
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      },
+      "CreateProductDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Promo 5"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 15000
+          },
+          "category": {
+            "enum": [
+              "FOOD",
+              "DRINKS"
+            ],
+            "type": "string",
+            "example": "FOOD"
+          },
+          "options": {
+            "description": "Optional choices for combo / configurable products",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateProductOptionDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "category"
+        ]
+      },
+      "AddProductOptionsDto": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateProductOptionDto"
+            }
+          }
+        },
+        "required": [
+          "options"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {}
+      },
+      "SaleProductOptionLineDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "productOptionId": {
+            "type": "number",
+            "example": 12
+          },
+          "optionName": {
+            "type": "string",
+            "example": "Burger"
+          },
+          "price": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "id",
+          "productOptionId",
+          "optionName",
+          "price"
+        ]
+      },
+      "SaleProductLineDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 10,
+            "description": "Sale line item id"
+          },
+          "productId": {
+            "type": "number",
+            "example": 5
+          },
+          "name": {
+            "type": "string",
+            "example": "Promo 5"
+          },
+          "price": {
+            "type": "number",
+            "example": 15000
+          },
+          "quantity": {
+            "type": "number",
+            "example": 1
+          },
+          "observation": {
+            "type": "string",
+            "example": "Sin cebolla"
+          },
+          "category": {
+            "type": "string",
+            "example": "FOOD"
+          },
+          "selectedOptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleProductOptionLineDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "productId",
+          "name",
+          "price",
+          "quantity",
+          "selectedOptions"
+        ]
+      },
+      "SaleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "clientId": {
+            "type": "number",
+            "example": 1
+          },
+          "isDelivery": {
+            "type": "boolean",
+            "example": false
+          },
+          "tableNumber": {
+            "type": "number",
+            "example": 4
+          },
+          "customerNickname": {
+            "type": "string",
+            "example": "Carlos"
+          },
+          "partySize": {
+            "type": "number",
+            "example": 2
+          },
+          "status": {
+            "type": "string",
+            "example": "abierta",
+            "enum": [
+              "abierta",
+              "cerrada"
+            ]
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleProductLineDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "isDelivery",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateSaleDto": {
+        "type": "object",
+        "properties": {
+          "isDelivery": {
+            "type": "boolean",
+            "example": false
+          },
+          "tableNumber": {
+            "type": "number",
+            "minimum": 1,
+            "example": 4
+          },
+          "customerNickname": {
+            "type": "string",
+            "example": "Carlos"
+          },
+          "partySize": {
+            "type": "number",
+            "minimum": 1,
+            "example": 2
+          }
+        },
+        "required": [
+          "isDelivery"
+        ]
+      },
+      "AddProductToSaleDto": {
+        "type": "object",
+        "properties": {
+          "saleId": {
+            "type": "number",
+            "example": 1
+          },
+          "productId": {
+            "type": "number",
+            "example": 5
+          },
+          "quantity": {
+            "type": "number",
+            "minimum": 1,
+            "example": 1,
+            "default": 1
+          },
+          "observation": {
+            "type": "string",
+            "example": "Sin cebolla"
+          },
+          "selectedOptionIds": {
+            "example": [
+              12
+            ],
+            "description": "Required when the product has configurable options",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "saleId",
+          "productId"
+        ]
+      },
+      "SaleProductLine": {
+        "type": "object",
+        "properties": {}
+      },
+      "Sale": {
+        "type": "object",
+        "properties": {}
+      },
+      "DeletedSaleDto": {
+        "type": "object",
+        "properties": {
+          "deletedSaleId": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "deletedSaleId"
+        ]
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "cashPaid": {
+            "type": "number",
+            "minimum": 0,
+            "example": 5000
+          },
+          "cardPaid": {
+            "type": "number",
+            "minimum": 0,
+            "example": 10000
+          },
+          "transferPaid": {
+            "type": "number",
+            "minimum": 0,
+            "example": 0
+          },
+          "tipPaid": {
+            "type": "number",
+            "minimum": 0,
+            "example": 500
+          },
+          "saleId": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "cashPaid",
+          "cardPaid",
+          "transferPaid",
+          "tipPaid",
+          "saleId"
+        ]
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "saleId": {
+            "type": "number",
+            "example": 1
+          },
+          "cashPaid": {
+            "type": "number",
+            "example": 5000
+          },
+          "cardPaid": {
+            "type": "number",
+            "example": 10000
+          },
+          "transferPaid": {
+            "type": "number",
+            "example": 0
+          },
+          "tipPaid": {
+            "type": "number",
+            "example": 500
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "saleId",
+          "cashPaid",
+          "cardPaid",
+          "transferPaid",
+          "tipPaid",
+          "createdAt"
+        ]
+      }
+    }
+  }
+}

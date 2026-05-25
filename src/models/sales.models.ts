@@ -1,11 +1,19 @@
+export class SaleProductOptionLine {
+  id: number;
+  productOptionId: number;
+  optionName: string;
+  price: number;
+}
+
 export class SaleProductLine {
   id: number;
   productId: number;
   name: string;
   price: number;
   quantity: number;
+  observation?: string;
   category?: string;
-  clientId?: number;
+  selectedOptions: SaleProductOptionLine[];
 }
 
 export class Sale {
@@ -20,11 +28,4 @@ export class Sale {
   createdAt: Date;
   updatedAt: Date;
   products?: SaleProductLine[];
-}
-
-export class SaleProductEntry {
-  id: number;
-  saleId: number;
-  productId: number;
-  quantity: number;
 }

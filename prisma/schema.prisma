@@ -116,7 +116,6 @@ model SaleProduct {
 
   options SaleProductOption[]
 
-  @@unique([saleId, productId])
   @@index([saleId])
   @@index([productId])
 }

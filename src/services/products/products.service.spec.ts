@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from './products.service';
 import { ProductsDBRepository } from 'src/repositories/products/products-db.repository';
+import { AppLoggerService } from 'src/services/logging/app-logger.service';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -14,8 +15,18 @@ describe('ProductsService', () => {
           useValue: {
             create: jest.fn(),
             findByClientId: jest.fn(),
-            delete: jest.fn(),
+            deactivate: jest.fn(),
+            addOptions: jest.fn(),
             isNotFoundError: jest.fn(),
+          },
+        },
+        {
+          provide: AppLoggerService,
+          useValue: {
+            log: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+            debug: jest.fn(),
           },
         },
       ],
