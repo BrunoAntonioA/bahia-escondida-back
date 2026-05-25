@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaymentDto } from './payment.schema';
 
 export class SaleProductOptionLineDto {
   @ApiProperty({ example: 1 })
@@ -73,6 +74,23 @@ export class SaleDto {
 
   @ApiPropertyOptional({ type: [SaleProductLineDto] })
   products?: SaleProductLineDto[];
+
+  @ApiPropertyOptional({
+    type: [PaymentDto],
+    description: 'Payment records for this sale (cash, card, transfer, tip)',
+  })
+  payments?: PaymentDto[];
+}
+
+export class TableWithSalesDto {
+  @ApiProperty({ example: 4 })
+  tableNumber: number;
+
+  @ApiProperty({
+    type: [SaleDto],
+    description: 'Sales at this table, newest first',
+  })
+  sales: SaleDto[];
 }
 
 export class DeletedSaleDto {

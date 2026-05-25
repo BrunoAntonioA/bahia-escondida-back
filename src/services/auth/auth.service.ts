@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -95,7 +96,9 @@ export class AuthService {
       clientId: user.clientId,
     });
 
-    return this.buildAuthResponse(user);
+    const profile = await this.userRepository.findByIdWithClientName(user.id);
+
+    return this.buildAuthResponse(user, profile ?? undefined);
   }
 
   public async validateUserById(id: number): Promise<PublicUser | null> {
@@ -111,8 +114,20 @@ export class AuthService {
     return this.toPublicUser(user);
   }
 
-  private buildAuthResponse(user: User): AuthResponse {
-    const publicUser = this.toPublicUser(user);
+  public async getMe(userId: number): Promise<PublicUser> {
+    this.appLogger.log(LOG_CONTEXT, 'Fetching current user profile', { userId });
+
+    const profile = await this.userRepository.findByIdWithClientName(userId);
+
+    if (!profile) {
+      this.appLogger.warn(LOG_CONTEXT, 'User profile not found', { userId });
+      throw new NotFoundException('User not found');
+    }
+
+    return profile;
+  }
+
+  private buildAuthResponse(user: User, publicUser?: PublicUser): AuthResponse {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -121,7 +136,7 @@ export class AuthService {
     };
 
     return {
-      user: publicUser,
+      user: publicUser ?? this.toPublicUser(user),
       accessToken: this.jwtService.sign(payload),
     };
   }

@@ -47,7 +47,7 @@ export class AuthController {
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'Get current authenticated user' })
   @ApiOkResponse({ type: PublicUserDto })
-  me(@CurrentUser() user: PublicUser): PublicUser {
-    return user;
+  me(@CurrentUser() user: PublicUser): Promise<PublicUser> {
+    return this.authService.getMe(user.id);
   }
 }

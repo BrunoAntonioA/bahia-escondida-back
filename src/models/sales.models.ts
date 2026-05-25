@@ -1,3 +1,5 @@
+import { Payment } from './payments.models';
+
 export class SaleProductOptionLine {
   id: number;
   productOptionId: number;
@@ -28,4 +30,10 @@ export class Sale {
   createdAt: Date;
   updatedAt: Date;
   products?: SaleProductLine[];
+  payments?: Payment[];
+}
+
+export class TableWithSales {
+  tableNumber: number;
+  sales: Sale[];
 }

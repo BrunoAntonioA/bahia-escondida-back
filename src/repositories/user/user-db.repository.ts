@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { BaseUser, User, UserWithPassword } from 'src/models/user.models';
+import { BaseUser, PublicUser, User, UserWithPassword } from 'src/models/user.models';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 
 export interface CreateUserData extends BaseUser {
@@ -54,6 +54,33 @@ export class UserDBRepository {
     }
 
     return plainToInstance(User, user);
+  }
+
+  public async findByIdWithClientName(
+    id: number,
+    tx: PrismaService = this.prismaService,
+  ): Promise<PublicUser | null> {
+    const user = await tx.user.findUnique({
+      where: { id },
+      include: {
+        client: {
+          select: { name: true },
+        },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name ?? undefined,
+      role: user.role,
+      clientId: user.clientId ?? undefined,
+      clientName: user.client?.name,
+    };
   }
 
   public async create(

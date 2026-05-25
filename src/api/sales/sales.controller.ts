@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -19,11 +20,14 @@ import {
 import { CurrentClientId } from 'src/api/auth/decorators/current-client-id.decorator';
 import { AddProductToSaleDto } from './dto/add-product-to-sale.dto';
 import { CreateSaleDto } from './dto/create-sale.dto';
+import { DateRangeQueryDto } from './dto/date-range-query.dto';
 import { SalesService } from 'src/services/sales/sales.service';
+import { SalesPaymentSummaryDto } from 'src/swagger/schemas/sales-summary.schema';
 import {
   DeletedSaleDto,
   SaleDto,
   SaleProductLineDto,
+  TableWithSalesDto,
 } from 'src/swagger/schemas/sale.schema';
 
 @ApiTags('sales')
@@ -32,10 +36,36 @@ import {
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
+  @Get('summary')
+  @ApiOperation({
+    summary: 'Payment and sales summary for a date range',
+    description:
+      'Returns aggregated payment totals and all sales created or closed in the range, each with payments from the same period.',
+  })
+  @ApiOkResponse({ type: SalesPaymentSummaryDto })
+  getPaymentSummary(
+    @CurrentClientId() clientId: number,
+    @Query() query: DateRangeQueryDto,
+  ) {
+    return this.salesService.getPaymentSummary(clientId, query);
+  }
+
+  @Get('tables')
+  @ApiOperation({
+    summary: 'List dine-in tables with their sales and payments',
+    description:
+      'Returns sales grouped by table number (non-delivery only). Each sale includes products and payment records.',
+  })
+  @ApiOkResponse({ type: [TableWithSalesDto] })
+  getTablesWithPayments(@CurrentClientId() clientId: number) {
+    return this.salesService.getTablesWithPayments(clientId);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'List sales for the authenticated client',
-    description: 'Includes product lines and selected options for each sale.',
+    description:
+      'Includes product lines, selected options, and payments for each sale.',
   })
   @ApiOkResponse({ type: [SaleDto] })
   getSalesByClient(@CurrentClientId() clientId: number) {
@@ -55,7 +85,10 @@ export class SalesController {
   @Get('/:saleId')
   @ApiOperation({ summary: 'Get a sale by id' })
   @ApiParam({ name: 'saleId', type: Number })
-  @ApiOkResponse({ type: SaleDto })
+  @ApiOkResponse({
+    type: SaleDto,
+    description: 'Includes products, selected options, and payments',
+  })
   getSaleById(
     @CurrentClientId() clientId: number,
     @Param('saleId', ParseIntPipe) saleId: number,

@@ -4,10 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { AddProductToSaleDto } from 'src/api/sales/dto/add-product-to-sale.dto';
+import { DateRangeQueryDto } from 'src/api/sales/dto/date-range-query.dto';
 import { CreateSaleDto } from 'src/api/sales/dto/create-sale.dto';
-import { Sale, SaleProductLine } from 'src/models/sales.models';
+import { SalesPaymentSummary } from 'src/models/sales-summary.models';
+import { Sale, SaleProductLine, TableWithSales } from 'src/models/sales.models';
 import { SalesDBRepository } from 'src/repositories/sales/sales-db.repository';
 import { AppLoggerService } from 'src/services/logging/app-logger.service';
+import { parseDateRange } from 'src/shared/date-range.util';
 
 const LOG_CONTEXT = 'SalesService';
 
@@ -171,6 +174,54 @@ export class SalesService {
     });
 
     return sales;
+  }
+
+  public async getTablesWithPayments(
+    clientId: number,
+  ): Promise<TableWithSales[]> {
+    this.appLogger.log(LOG_CONTEXT, 'Fetching tables with sales and payments', {
+      clientId,
+    });
+
+    const tables = await this.salesRepository.findTablesWithSales(clientId);
+
+    this.appLogger.log(LOG_CONTEXT, 'Tables fetched', {
+      clientId,
+      count: tables.length,
+    });
+
+    return tables;
+  }
+
+  public async getPaymentSummary(
+    clientId: number,
+    query: DateRangeQueryDto,
+  ): Promise<SalesPaymentSummary> {
+    const { start, end } = parseDateRange(query.startDate, query.endDate);
+
+    if (start > end) {
+      throw new BadRequestException('startDate must be before or equal to endDate');
+    }
+
+    this.appLogger.log(LOG_CONTEXT, 'Fetching payment summary', {
+      clientId,
+      startDate: query.startDate,
+      endDate: query.endDate,
+    });
+
+    const summary = await this.salesRepository.getPaymentSummary(
+      clientId,
+      start,
+      end,
+    );
+
+    this.appLogger.log(LOG_CONTEXT, 'Payment summary fetched', {
+      clientId,
+      paymentCount: summary.totals.paymentCount,
+      salesCount: summary.sales.length,
+    });
+
+    return summary;
   }
 
   public async deleteSaleProductLine(

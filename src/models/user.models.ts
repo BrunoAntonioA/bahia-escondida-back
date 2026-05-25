@@ -25,6 +25,7 @@ export class PublicUser {
   name?: string;
   role: UserRole;
   clientId?: number;
+  clientName?: string;
 }
 
 export interface JwtPayload {

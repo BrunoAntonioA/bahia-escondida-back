@@ -19,6 +19,12 @@ export class PublicUserDto {
     description: 'Business client id linked to this user',
   })
   clientId?: number;
+
+  @ApiPropertyOptional({
+    example: 'Bahia Escondida',
+    description: 'Business client name (included in login and GET /auth/me responses)',
+  })
+  clientName?: string;
 }
 
 export class AuthResponseDto {
